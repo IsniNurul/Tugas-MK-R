@@ -24,7 +24,7 @@ Upper
 #3. Membuat dataset yang tidak berisi outlier sesuai cutoff no 2
 
 pef_na_pef_no <- subset(pef_na_pef, pef_na_pef$pef > Lower 
-                       & ppef_na_pef$pef < Upper)
+                       & pef_na_pef$pef < Upper)
 summary(pef_na_pef_no)
 boxplot(pef_na_pef_no$pef)
 
