@@ -1,18 +1,18 @@
 #Reading data
-pef_final
+pef_na_pef
 
 #1. Mengidentifikasi outlier berdasarkan kriteria dan visualisasi grafik boxplot
-summary(pef_final$pef)
-boxplot(pef_final$pef)
+summary(pef_na_pef$pef)
+boxplot(pef_na_pef$pef)
 
 #2. Menentukan cutoff outlier (batas atas dan bawah) dari grafik boxplot tersebut.
-min(boxplot(pef_final$pef, plot = FALSE)$out)
-max(boxplot(pef_final$pef, plot = FALSE)$out)
+min(boxplot(pef_na_pef$pef, plot = FALSE)$out)
+max(boxplot(pef_na_pef$pef, plot = FALSE)$out)
 
-quartiles <- quantile(pef_final$pef, probs=c(.25, .75), na.rm=FALSE)
+quartiles <- quantile(pef_na_pef$pef, probs=c(.25, .75), na.rm=FALSE)
 quartiles
 
-IQR <- IQR(pef_final$pef)
+IQR <- IQR(pef_na_pef$pef)
 IQR
 
 Lower <- quartiles[1] - 1.5*IQR
@@ -23,38 +23,38 @@ Upper
 
 #3. Membuat dataset yang tidak berisi outlier sesuai cutoff no 2
 
-pef_final_no <- subset(pef_final, pef_final$pef > Lower 
-                       & pef_final$pef < Upper)
-summary(pef_final_no)
-boxplot(pef_final_no$pef)
+pef_na_pef_no <- subset(pef_na_pef, pef_na_pef$pef > Lower 
+                       & ppef_na_pef$pef < Upper)
+summary(pef_na_pef_no)
+boxplot(pef_na_pef_no$pef)
 
 #4. Melakukan tes normalitas pada dataset dengan outlier dan tanpa outlier
 #For Small Sample (Saphiro Wilk)
-shapiro.test(pef_final$pef)
-shapiro.test(pef_final_no$pef)
+shapiro.test(pef_na_pef$pef)
+shapiro.test(pef_na_pef_no$pef)
 
 #For Big Sample (Kolmogrov-Smirnov)
 library(nortest)
-lillie.test(pef_final$pef)
-lillie.test(pef_final_no$pef)
+lillie.test(pef_na_pef$pef)
+lillie.test(pef_na_pef_no$pef)
 
 #5. Membuat grafik QQ line untuk membandingkan visualisasi nilai pef pada dataset dengan outlier dan tanpa outlier
-qqnorm(pef_final$pef); qqline(pef_final$pef)
-qqnorm(pef_final_no$pef); qqline(pef_final_no$pef)
+qqnorm(pef_na_pef$pef); qqline(pef_na_pef$pef)
+qqnorm(pef_na_pef_no$pef); qqline(pef_na_pef_no$pef)
 
 #6. Membuat scatterplot yang memperlihatkan hubungan antara pef dengan height, dengan penambahan garis linear/regresi dan smoothed dengan loes (local regression smoothing)
-plot(pef_final_no$pef~pef_final_no$height)
+plot(pef_na_pef_no$pef~pef_na_pef_no$height)
 
-smoothScatter(pef_final_no$pef~pef_final_no$height)
+smoothScatter(pef_na_pef_no$pef~pef_na_pef_no$height)
 
-abline(lm(pef_final_no$pef~pef_final_no$height, data = pef_final_no), col = "blue")
-lines(lowess(pef_final_no$height, pef_final_no$pef), col = "red")
+abline(lm(pef_na_pef_no$pef~pef_na_pef_no$height, data = pef_na_pef_no), col = "blue")
+lines(lowess(pef_na_pef_no$height, pef_na_pef_no$pef), col = "red")
 
 #7. Membuat scatterplot yang memperlihatkan hubungan antara pef dengan umur, dengan penambahan garis linear/regresi dan smoothed dengan loes (local regression smoothing).
 
-plot(pef_final_no$pef~pef_final_no$age)
+plot(pef_na_pef_no$pef~pef_final_no$age)
 
-smoothScatter(pef_final_no$pef~pef_final_no$height)
+smoothScatter(pef_na_pef_no$pef~pef_final_no$height)
 
-abline(lm(pef_final_no$pef~pef_final_no$age, data = pef_final_no), col = "blue")
-lines(lowess(pef_final_no$age, pef_final_no$pef), col = "red")
+abline(lm(pef_na_pef_no$pef~pef_na_pef_no$age, data = pef_na_pef_no), col = "blue")
+lines(lowess(pef_na_pef_no$age, pef_na_pef_no$pef), col = "red")
