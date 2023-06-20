@@ -1,0 +1,127 @@
+#LOGISTIC REGRESSION
+
+w5_pef <- w5_pef_lj
+names(w5_pef)
+table(w5_pef$Asthma)
+
+#Memilih dataset dengan informasi riwayat asthma tersedia
+#Memilih berdasarkan kriteria kuantitatif tertentu
+w5_pef_as = filter(w5_pef, Asthma=="No-Asthma" | Asthma=="Yes-Asthma")
+
+#mencek variabel Asthma
+class(w5$Asthma)
+table(w5_pef_as$Asthma)
+
+#Konversi variable outcome menjadi 1 dan 0 (glm dgn family binomial)
+#Hanya dapat memproses variabel outcome dalam bentuk 0 dan 1
+w5_pef_as$as_new = 1
+w5_pef_as$as_new[w5_pef_as$Asthma == "No-Asthma" ] = 0
+
+model_log = glm(Asthma ~ pef, w5_pef_as, family = binomial) #KENAPA EROR SAAT DI RUN?
+table(w5_pef_as$as_new)
+
+# running logistik regresi dengan 1 variable explanatori
+model_log = glm(as_new ~ pef, w5_pef_as, family = binomial) #KENAPA EROR SAAT DI RUN?
+
+summary(model_log)
+
+#Visual test for linearity
+w5_pef_as %%
+  mutate(corpcomp_res = coef(mod)["pef"]*pef + residuals (model_log, type= "working"))%>%
+  ggplot (aes(x=pef, y=comp_res)) + 
+  geom_point() +
+  geom_smooth(color="red", method = "lm", linetype = 2, se = F) + 
+  geom_smooth(se = F)
+
+model_log2 = glm(as_new ~ pef + height, w5_pef_as, family= binomial)
+
+library(car)
+vif(model_log2)
+
+exp(1)
+exp(0.05)
+
+model_log3 = glm(as_new ~ pef + height + br_wheez, w5_pef_as, family= binomial)
+
+#Mengkode semua dulu menjadi 1
+w5_pef_as$br_wheez_new = 1 
+table(w5_pef_as$br_wheez_new)
+#Mengkode yg no wheezing jadi 0
+w5_pef_as$br_wheez_new[w5_pef_as$br_wheez=="No-Wheezing"] = 0
+table(w5_pef_as$br_wheez_new)
+
+#Mengkode yg NA menjadi 0 juga
+w5_pef_as$br_wheez_new[w5_pef_as$br_wheez=="NAWhe"] = 0
+table(w5_pef_as$br_wheez_new)
+
+model_log4 = glm(as_new ~ pef + height + br_wheez_new , w5_pef_as,
+                 family= binomial)
+
+#Menjadikan br_wheez_new sebagai kategorik
+model_log5 = glm(as_new ~ pef + height + as.factor(br_wheez_new) , w5_pef_as,
+                 family= binomial)
+library(MASS)
+#Kode untuk menghitung 95% CI dari OR
+exp(confint(model_log5))
+#Kode untuk menghitung 95% dari Beta
+confint(model_log5)
+
+library(MASS)
+step.model <- model_log5 %>% stepAIC(trace = FALSE)
+coef(step.model)
+
+names(w5_pef_as)
+class(w5_pef_as$age)
+class(w5_pef_as$sex)
+table(w5_pef_as$sex)
+class(w5_pef_as$stroke)
+table(w5_pef_as$stroke)
+summary(as.factor(w5_pef_as$stroke))
+
+full.model = glm(as_new ~pef + height + as.factor(br_wheez_new) + 
+                   age + as.factor(sex) + as.factor(stroke), w5_pef_as, 
+                 family = binomial)
+summary(full.model)
+
+step.model <- full.model %>% stepAIC(trace = FALSE)
+
+#MAKE PREDICTION
+probabilities <- full.model %>% predict(test.data, type = "response")
+predicted.classes <- ifelse(probabilities > 0.5, "pos", "neg")
+
+#PREDICTION ACCURACY
+observed.classes <- test.data$diabetes
+mean(predicted.classes == observed.classes)
+
+#model building dengan stepwise
+library(MASS)
+step.model <- model_log5 %>% stepAIC(trcae = FALSE)
+coef(step.model)
+
+names(w5_pef_as)
+class(w5_pef_as$age)
+class(w5_pef_as$sex)
+table(w5_pef_as$sex)
+class(w5_pef_as$stroke)
+table(w5_pef_as$stroke)
+summary(as.factor(w5_pef_as$stroke))
+
+full.model = glm(as_new ~ pef + height + as.factor(br_wheez_new) +
+                   age + as.factor (sex) + as.factor(stroke), w5_pef_as,
+                 family= binomial)
+
+step.model <- full.model %>% stepAIC(trace = FALSE)
+coef(step.model)
+
+summary(full.model)
+
+step.model <- full.model %>% stepAIC(trace = FALSE)
+coef(step.model)
+
+#Make predictions for full.model
+probabilities <- step.model %>% predict(test.data, type = "resnponse")
+predicted.classes <- ifelse(probabilities > 0.5, "pas", "neg")
+#Prediction accuracy
+observed.classes <- test.data$diabetes
+mean(predicted.classes == observed.classes)
+
